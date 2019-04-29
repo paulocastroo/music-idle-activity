@@ -1,0 +1,28 @@
+#!/bin/bash
+
+status=""
+temp=""
+while [ true ]
+do
+	idletime=$(xprintidle)
+	threshold=900 # 5 min = 5 * 60 * 1000 ms
+
+	if [ "$idletime" -gt "$threshold" ]; then
+  	        temp="not idle"
+        else
+                temp="idle"
+	fi
+
+        if [ "$status" != "$temp" ]; then
+    		echo $status $idletime
+                pid=$(pgrep ffplay)
+		
+		if [ "$status" == "idle" ]; then
+			kill -STOP $pid
+                else
+			kill -CONT $pid
+   		fi
+
+		status=$temp
+        fi
+done
